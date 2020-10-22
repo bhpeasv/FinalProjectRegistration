@@ -34,7 +34,7 @@ namespace XUnitTestProject
         [Theory]
         [InlineData(1, "Name", "Address", 1111, "District", "e@mail.dk")]
         [InlineData(1, "Name", "Address", 1111, "District", null)]
-        public void AddValidStudent(int id, string name, string address, int zipcode, string district, string email)
+        public void AddValidStudentNotExist(int id, string name, string address, int zipcode, string district, string email)
         {
             // arrange
             IStudentRepository repo = repoMock.Object;
@@ -55,6 +55,32 @@ namespace XUnitTestProject
 
             // assert
             repoMock.Verify(repo => repo.Add(It.Is<Student>((st => st == s))), Times.Once);
+        }
+
+        [Fact]
+        public void AddStudentExistingStudentExpectInvalidOperationException()
+        {
+            //
+            Student s = new Student()
+            {
+                Id = 1,
+                Name = "Name",
+                Address = "Address",
+                ZipCode = 1111,
+                PostalDistrict = "District",
+                Email = "e@mail.dk"
+            };
+
+            // Make sure the student already exist before test
+            repoMock.Setup(repo => repo.GetById(It.Is<int>(x => x == s.Id))).Returns(() => s);
+
+            StudentService service = new StudentService(repoMock.Object);
+
+            // act + assert
+            var ex = Assert.Throws<InvalidOperationException>(() => service.AddStudent(s));
+
+            Assert.Equal("Student already exist", ex.Message);
+            repoMock.Verify(repo => repo.Add(It.Is<Student>(st => st == s)), Times.Never);
         }
 
         [Fact]
