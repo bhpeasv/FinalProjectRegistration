@@ -34,5 +34,14 @@ namespace Services
             Team t = new Team() { Id = id};
             repo.Add(t);
         }
+
+        public void RemoveTeam(Team t)
+        {
+            if (repo.GetById(t.Id) == null)
+            {
+                throw new InvalidOperationException("Team to remove does not exist");
+            }
+            repo.Remove(t);
+        }
     }
 }

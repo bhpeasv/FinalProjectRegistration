@@ -92,5 +92,48 @@ namespace XUnitTestProject
             Assert.Equal("Invalid Team-Id", ex.Message);
             repoMock.Verify(repo => repo.Add(It.Is<Team>( t => t.Id == teamId)), Times.Never);
         }
+
+        [Fact]
+        public void RemoveTeam_ValidExisting()
+        {
+            // arrange
+            Team t = new Team()
+            { 
+                Id = 1
+            };
+
+            // Make sure the team exists in the Repository
+            repoMock.Setup(x => x.GetById(It.Is<int>(id => id == t.Id))).Returns(() => t);
+
+            TeamService service = new TeamService(repoMock.Object);
+
+            // act
+            service.RemoveTeam(t);
+
+            // assert
+            repoMock.Verify(repo => repo.Remove(It.Is<Team>((team) => team.Id == t.Id)), Times.Once);
+        }
+
+        [Fact]
+        public void RemoveTeam_TeamDoesNotExist_ExpectInvalidOperationException()
+        {
+            // arrange
+            Team t = new Team()
+            { 
+                Id = 1
+            };
+
+            // Make sure the team does not exist in the Repository
+            repoMock.Setup(x => x.GetById(It.Is<int>(id => id == t.Id))).Returns(() => null);
+
+            TeamService service = new TeamService(repoMock.Object);
+
+            // act
+            var ex = Assert.Throws<InvalidOperationException>(() => service.RemoveTeam(t));
+
+            // assert
+            Assert.Equal("Team to remove does not exist", ex.Message);
+            repoMock.Verify(repo => repo.Remove(It.Is<Team>((team) => team.Id == t.Id)), Times.Never);
+        }
     }
 }
