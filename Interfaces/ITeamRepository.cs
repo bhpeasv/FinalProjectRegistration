@@ -1,7 +1,5 @@
 ﻿using Model;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Interfaces
 {
@@ -12,6 +10,5 @@ namespace Interfaces
         void Remove(Team t);
         IEnumerable<Team> GetAll();
         Team GetById(int id);
-
     }
 }
