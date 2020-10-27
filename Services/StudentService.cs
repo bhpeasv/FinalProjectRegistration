@@ -28,10 +28,6 @@ namespace Services
             {
                 throw new ArgumentException("Invalid student property");
             }
-            if (repo.GetById(s.Id) != null)
-            {
-                throw new InvalidOperationException("Student already exist");
-            }
             repo.Add(s);
         }
 
